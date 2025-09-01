@@ -1,136 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SecuraByte 🔒</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f4f6fb;color:#0f172a;padding:20px;transition:.3s}
-.container{max-width:950px;margin:auto;background:#ffffff;border-radius:16px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08);position:relative}
-h1{text-align:center;margin-bottom:20px;font-size:24px}
-textarea,select,input{width:100%;padding:12px;margin-bottom:12px;border-radius:10px;border:1px solid #d5d9e2;font-size:14px}
-textarea{height:120px;resize:vertical}
-button{padding:10px 14px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin:3px;background:#3b82f6;color:#fff;transition:.2s}
-button:hover{background:#2563eb}
-button.ghost{transition:.2s}
-body:not(.dark) button.ghost{background:#fff;color:#0f172a;border:1px solid #cdd3df}
-body.dark button.ghost{background:#1f1f1f;color:#e6eef8;border:1px solid #444}
-.output{background:#f0f4f8;color:#0f172a;border-radius:10px;padding:14px;min-height:90px;overflow-wrap:break-word;margin-bottom:16px;transition:.3s}
-.saved{margin-top:20px;border-top:1px dashed #cbd5e1;padding-top:12px}
-.item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin-bottom:10px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;transition:.2s}
-.item:hover{background:#e0e7ff}
-.item button{padding:6px 10px;font-size:12px;background:#10b981}
-.item button:hover{background:#059669}
-.toggle{position:absolute;top:20px;right:20px}
-.credits{margin-top:24px;text-align:center;background:#f9fafb;padding:14px;border-radius:12px;border:1px solid #e5e7eb}
-.credits a{color:#2563eb;text-decoration:none;font-weight:700}
-.credits a:hover{text-decoration:underline}
-.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
-.modal .box{background:#ffffff;border-radius:14px;max-width:360px;width:100%;padding:18px 16px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-.modal h3{margin-bottom:10px;text-align:center}
-.modal p{font-size:14px;margin-bottom:8px}
-.modal .actions{display:flex;gap:8px;justify-content:center;margin-top:8px}
-body.dark{background:#0b1220;color:#e6eef8}
-body.dark .container{background:#0f172a;box-shadow:0 8px 30px rgba(0,0,0,.45)}
-body.dark textarea,body.dark select,body.dark input{background:#0b1220;border:1px solid #1f2937;color:#e6eef8}
-body.dark .output{background:#0a0f1a;color:#e6eef8;border:none}
-body.dark .item{background:#0b1220;border:1px solid #1f2937}
-body.dark .item:hover{background:#1f2937}
-body.dark .credits{background:#0b1220;border:1px solid #1f2937}
-body.dark .credits a{color:#60a5fa}
-body.dark .modal .box{background:#1e1e1e;color:#e6eef8;border:1px solid #333}
+:root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#7c3aed;--glass:rgba(255,255,255,0.04)}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+body{background:linear-gradient(180deg,#071025 0%,#08162a 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:28px}
+.card{width:100%;max-width:980px;background:var(--card);border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+h1{margin:0 0 8px;font-size:20px}
+p.lead{color:var(--muted);margin-top:0;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+select,input[type=text],input[type=password],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
+textarea{min-height:140px;resize:vertical}
+.muted{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px}
+button{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:white;font-weight:600;cursor:pointer}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+.filedrop{border:1px dashed rgba(255,255,255,0.06);padding:14px;border-radius:8px;text-align:center;color:var(--muted);cursor:pointer}
+.small{font-size:13px;color:var(--muted)}
+.output{background:var(--glass);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);min-height:80px;overflow:auto}
+.footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.danger{color:#ffb3b3}
+.success{color:#b7ffcf}
+.hint{font-size:12px;color:var(--muted)}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
-<div class="container">
-<button id="darkToggle" class="toggle ghost">🌙 Dark</button>
+<div class="card">
 <h1>SecuraByte 🔒</h1>
-<textarea id="textInput" placeholder="Enter text to encrypt or paste ciphertext"></textarea>
-<select id="mode">
-<option value="AES-128">AES-128</option>
-<option value="AES-192">AES-192</option>
-<option value="AES-256" selected>AES-256</option>
-<option value="DES">DES</option>
-<option value="TripleDES">TripleDES</option>
-<option value="RC4">RC4</option>
-<option value="Rabbit">Rabbit</option>
+<p class="lead">Encrypt/decrypt text or files in your browser using Web Crypto. Password-based key derivation (PBKDF2).</p>
+<div class="grid">
+<div class="panel">
+<label>Mode</label>
+<div class="row" style="margin-bottom:10px">
+<select id="algo">
+<option value="AES-GCM">AES-GCM</option>
 </select>
-<div style="display:flex;gap:5px;margin-bottom:12px">
-<input type="password" id="password" placeholder="Enter password">
-<button onclick="togglePassword()">👁️</button>
+<select id="keySize">
+<option value="128">AES-128</option>
+<option value="256" selected>AES-256</option>
+</select>
+<select id="iterations">
+<option value="100000">PBKDF2 - 100k</option>
+<option value="200000">PBKDF2 - 200k</option>
+<option value="400000">PBKDF2 - 400k</option>
+</select>
 </div>
-<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-<button id="encryptTextBtn">Encrypt Text</button>
-<button id="decryptTextBtn">Decrypt Text</button>
-<button id="tutorialBtn" class="ghost">📖 Tutorial</button>
+<label>Password</label>
+<input id="password" type="password" placeholder="Type a strong password..." />
+<div style="height:8px"></div>
+<label>Plain text (or leave empty and import a file)</label>
+<textarea id="plaintext" placeholder="Enter text to encrypt..."></textarea>
+<div style="height:8px"></div>
+<label>Or drop / choose a file</label>
+<div id="filedrop" class="filedrop">Drop a file here or click to choose</div>
+<input type="file" id="fileInput" style="display:none" />
+<div style="height:10px"></div>
+<div class="controls">
+<button id="encryptBtn">Encrypt</button>
+<button id="decryptBtn" class="ghost">Decrypt</button>
+<button id="clearBtn" class="ghost">Clear</button>
+<button id="downloadBtn" class="ghost" title="Download last encrypted/decrypted payload">Download</button>
+<button id="copyBtn" class="ghost">Copy Output</button>
 </div>
-<div class="file-input" style="margin-bottom:12px">
-<input type="file" id="fileInput">
-<button id="encryptFileBtn">Encrypt File</button>
-</div>
+<div style="height:10px"></div>
+<label>Output</label>
 <div id="output" class="output"></div>
-<div class="saved">
-<h3>Saved Items</h3>
-<div id="savedList"></div>
-<button onclick="clearMemory()" class="ghost">Clear All Memory</button>
-</div>
-<div class="credits">
-<p>Created by <b>Hariharshan Prathap</b></p>
-<p><a href="https://www.youtube.com/@MeteorGaming96" target="_blank">🌐 My YouTube Channel</a></p>
+<div class="footer">
+<div class="hint">Format: JSON with base64 fields (salt, iv, ciphertext). Use the same password + settings to decrypt.</div>
+<div style="font-size:12px;color:var(--muted)">v1 • In-browser only — nothing leaves your machine</div>
 </div>
 </div>
-
-<div id="passwordPrompt" class="modal">
-<div class="box">
-<h3>Enter Password</h3>
-<input type="password" id="promptPassword" placeholder="Password">
-<div class="actions">
-<button onclick="submitPassword()">OK</button>
-<button onclick="closePrompt()">Cancel</button>
-</div>
-</div>
-</div>
-
-<div id="tutorialModal" class="modal">
-<div class="box">
-<h3>SecuraByte 🔒 Tutorial</h3>
-<p>1. Type your text or select a file.</p>
-<p>2. Enter a strong password.</p>
-<p>3. Choose an encryption algorithm.</p>
-<p>4. Click Encrypt.</p>
-<p>5. Decrypt saved items using the password prompt.</p>
-<p>6. Clear memory anytime with "Clear All Memory".</p>
-<div class="actions">
-<button onclick="closeTutorial()">Close</button>
+<div class="panel">
+<h3 style="margin-top:0">Info & Options</h3>
+<p class="muted">How it works:
+<ul class="muted">
+<li>Generates random salt + IV.</li>
+<li>Derives an AES key with PBKDF2 (SHA-256) from your password.</li>
+<li>Encrypts using AES-GCM (authenticated encryption).</li>
+</ul>
+</p>
+<h4>Advanced</h4>
+<label>Encoding</label>
+<select id="encoding"><option value="base64">Base64 (recommended)</option><option value="hex">Hex</option></select>
+<div style="height:10px"></div>
+<label>Last action info</label>
+<div id="lastinfo" class="output" style="min-height:60px"></div>
+<div style="height:10px"></div>
+<h4>Credits</h4>
+<p class="muted">Created by Hariharshan Prathap • <a href="https://www.youtube.com/@MeteorGaming96" target="_blank" style="color:var(--accent)">YouTube Channel</a></p>
+<h4>Security tips</h4>
+<ul class="muted">
+<li>Use a long random password or passphrase (12+ chars).</li>
+<li>Increase PBKDF2 iterations for more brute-force resistance.</li>
+<li>Keep encrypted outputs and your password separate.</li>
+</ul>
 </div>
 </div>
 </div>
-
 <script>
-let savedItems=[];let currentDecryptIndex=null;
-function togglePassword(){let p=document.getElementById('password');p.type=p.type==='password'?'text':'password'}
-function encryptText(){let txt=document.getElementById('textInput').value;let pass=document.getElementById('password').value;let mode=document.getElementById('mode').value;if(!txt||!pass)return;let encrypted=CryptoJS[mode.split('-')[0].toUpperCase()].encrypt(txt,pass).toString();savedItems.push({type:'text',data:encrypted,mode:mode});updateSavedList();document.getElementById('output').innerText=encrypted}
-function decryptText(){let txt=document.getElementById('textInput').value;let pass=document.getElementById('password').value;let mode=document.getElementById('mode').value;if(!txt||!pass)return;try{let dec=CryptoJS[mode.split('-')[0].toUpperCase()].decrypt(txt,pass).toString(CryptoJS.enc.Utf8);document.getElementById('output').innerText=dec?dec:"❌ Wrong password!"}catch(e){document.getElementById('output').innerText="❌ Corrupted data!"}}
-function encryptFile(){let f=document.getElementById('fileInput').files[0];let pass=document.getElementById('password').value;let mode=document.getElementById('mode').value;if(!f||!pass)return;let r=new FileReader();r.onload=function(){let encrypted=CryptoJS[mode.split('-')[0].toUpperCase()].encrypt(r.result,pass).toString();savedItems.push({type:'file',name:f.name,data:encrypted,mode:mode});updateSavedList();document.getElementById('output').innerText="File Encrypted: "+f.name};r.readAsDataURL(f)}
-function updateSavedList(){let l=document.getElementById('savedList');l.innerHTML='';savedItems.forEach((it,i)=>{let d=document.createElement('div');d.className='item';d.innerHTML=(it.type==='file'?"📄 "+it.name:"📝 Text")+" ("+it.mode+") <span><button onclick='promptDecrypt("+i+")'>Decrypt</button> <button onclick='downloadEncrypted("+i+")'>Download</button></span>";l.appendChild(d)})}
-function promptDecrypt(i){currentDecryptIndex=i;document.getElementById('passwordPrompt').style.display='flex'}
-function closePrompt(){document.getElementById('passwordPrompt').style.display='none';document.getElementById('promptPassword').value=''}
-function submitPassword(){let pass=document.getElementById('promptPassword').value;if(!pass)return;let it=savedItems[currentDecryptIndex];try{let dec=CryptoJS[it.mode.split('-')[0].toUpperCase()].decrypt(it.data,pass).toString(CryptoJS.enc.Utf8);if(it.type==='file'){if(dec){let blob=new Blob([dec]);let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=it.name;a.click();document.getElementById('output').innerText="File Decrypted: "+it.name}else document.getElementById('output').innerText="❌ Wrong password!"}else{document.getElementById('output').innerText=dec||"❌ Wrong password!"}}catch(e){document.getElementById('output').innerText="❌ Corrupted data!"}closePrompt()}
-function clearMemory(){savedItems=[];updateSavedList()}
-function downloadEncrypted(i){let it=savedItems[i];let blob=new Blob([it.data],{type:'text/plain'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=it.type==='file'?it.name+".enc":"text_encrypted.txt";a.click()}
-
-const darkToggle=document.getElementById('darkToggle')
-function toggleDarkMode(){document.body.classList.toggle('dark');let isDark=document.body.classList.contains('dark');localStorage.setItem('darkmode',isDark);darkToggle.textContent=isDark?'☀️ Light':'🌙 Dark'}
-if(localStorage.getItem('darkmode')==='true'){document.body.classList.add('dark');darkToggle.textContent='☀️ Light'}else{darkToggle.textContent='🌙 Dark'}
-darkToggle.onclick=toggleDarkMode
-
-document.getElementById('encryptTextBtn').onclick=encryptText
-document.getElementById('decryptTextBtn').onclick=decryptText
-document.getElementById('encryptFileBtn').onclick=encryptFile
-document.getElementById('tutorialBtn').onclick=function(){document.getElementById('tutorialModal').style.display='flex'}
-function closeTutorial(){document.getElementById('tutorialModal').style.display='none'}
+const enc=new TextEncoder();
+const dec=new TextDecoder();
+function toBase64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)));}
+function fromBase64(str){const bin=atob(str);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return arr.buffer;}
+function toHex(buf){return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function fromHex(hex){const arr=new Uint8Array(hex.length/2);for(let i=0;i<arr.length;i++)arr[i]=parseInt(hex.substr(i*2,2),16);return arr.buffer;}
+async function deriveKey(password,salt,iterations,keyLen){const passKey=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations,hash:'SHA-256'},passKey,{name:'AES-GCM',length:keyLen},false,['encrypt','decrypt']);}
+async function encryptData(plainBuffer,password,algoSettings){const salt=crypto.getRandomValues(new Uint8Array(16));const iv=crypto.getRandomValues(new Uint8Array(12));const key=await deriveKey(password,salt.buffer,algoSettings.iterations,algoSettings.keyLen);const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plainBuffer);return {salt: salt.buffer, iv: iv.buffer, ciphertext};}
+async function decryptData(payload,password,algoSettings){const key=await deriveKey(password,payload.salt,algoSettings.iterations,algoSettings.keyLen);return await crypto.subtle.decrypt({name:'AES-GCM',iv:payload.iv},key,payload.ciphertext);}
+const plaintextEl=document.getElementById('plaintext');
+const passwordEl=document.getElementById('password');
+const keySizeEl=document.getElementById('keySize');
+const iterationsEl=document.getElementById('iterations');
+const outputEl=document.getElementById('output');
+const lastinfoEl=document.getElementById('lastinfo');
+const encodingEl=document.getElementById('encoding');
+let lastPayload=null;
+let lastPlainName='data.txt';
+function showLastInfo(obj){lastinfoEl.textContent=JSON.stringify(obj,null,2);}
+async function handleEncrypt(){try{const password=passwordEl.value;if(!password){alert('Please provide a password.');return}const keyLen=parseInt(keySizeEl.value,10);const iterations=parseInt(iterationsEl.value,10);const algoSettings={keyLen,iterations};let sourceBuffer;let filename='data.txt';if(window._loadedFileBuffer){sourceBuffer=window._loadedFileBuffer;filename=window._loadedFileName}else{sourceBuffer=enc.encode(plaintextEl.value).buffer}const res=await encryptData(sourceBuffer,password,algoSettings);const encType=encodingEl.value;const packageObj={fmt:'securabyte:v1',alg:'AES-GCM',keyBits:keyLen,iterations,salt:encType==='base64'?toBase64(res.salt):toHex(res.salt),iv:encType==='base64'?toBase64(res.iv):toHex(res.iv),ciphertext:encType==='base64'?toBase64(res.ciphertext):toHex(res.ciphertext),filename:filename};outputEl.textContent=JSON.stringify(packageObj,null,2);lastPayload=packageObj;showLastInfo({action:'encrypt',alg:'AES-GCM',keyBits:keyLen,iterations});}catch(e){console.error(e);alert('Encryption failed: '+e.message);}}
+async function handleDecrypt(){try{const password=passwordEl.value;if(!password){alert('Please provide a password.');return}let txt=plaintextEl.value.trim();if(!txt){txt=outputEl.textContent.trim()}if(!txt){alert('Provide the encrypted JSON in Output or paste it into the text area.');return}const pkg=JSON.parse(txt);if(pkg.fmt!=='securabyte:v1')throw new Error('Unrecognized format');const encType=encodingEl.value;const salt=encType==='base64'?fromBase64(pkg.salt):fromHex(pkg.salt);const iv=encType==='base64'?fromBase64(pkg.iv):fromHex(pkg.iv);const ciphertext=encType==='base64'?fromBase64(pkg.ciphertext):fromHex(pkg.ciphertext);const algoSettings={keyLen:pkg.keyBits,iterations:pkg.iterations};let plainBuf;try{plainBuf=await decryptData({salt,iv,ciphertext},password,algoSettings);}catch(e){alert('Wrong password or corrupted file');return;}if(pkg.filename){const blob=new Blob([plainBuf]);const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=pkg.filename||'decrypted.bin';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showLastInfo({action:'decrypt',result:'downloaded file',filename:pkg.filename});outputEl.textContent='Decrypted file downloaded: '+(pkg.filename||'decrypted.bin');lastPayload=null}else{const text=dec.decode(plainBuf);outputEl.textContent=text;showLastInfo({action:'decrypt',result:'text displayed'});lastPayload=null}}catch(e){console.error(e);alert('Decryption failed: '+e.message);}}
+function handleClear(){plaintextEl.value='';outputEl.textContent='';passwordEl.value='';window._loadedFileBuffer=null;window._loadedFileName=null;lastPayload=null;showLastInfo({});}
+function downloadLast(){if(!lastPayload){alert('No encrypted payload available to download. Encrypt first.');return}const blob=new Blob([JSON.stringify(lastPayload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(lastPayload.filename?lastPayload.filename+'.enc':'encrypted.json');document.body.appendChild(a);a.click();a.remove();}
+function copyOutput(){navigator.clipboard.writeText(outputEl.textContent).then(()=>alert('Copied to clipboard')).catch(()=>alert('Could not copy'));}
+const filedrop=document.getElementById('filedrop');
+const fileInput=document.getElementById('fileInput');
+filedrop.addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',async(e)=>{if(e.target.files.length)await loadFile(e.target.files[0]);});
+filedrop.addEventListener('dragover',(e)=>{e.preventDefault();filedrop.style.borderColor='#6ee7b7';});
+filedrop.addEventListener('dragleave',()=>{filedrop.style.borderColor='';});
+filedrop.addEventListener('drop',async(e)=>{e.preventDefault();filedrop.style.borderColor='';if(e.dataTransfer.files.length)await loadFile(e.dataTransfer.files[0]);});
+async function loadFile(file){const buf=await file.arrayBuffer();window._loadedFileBuffer=buf;window._loadedFileName=file.name;plaintextEl.value='';filedrop.textContent=`Loaded: ${file.name} — ${Math.round(buf.byteLength/1024)} KB`;showLastInfo({loadedFile:file.name,size:buf.byteLength});}
+document.getElementById('encryptBtn').addEventListener('click',handleEncrypt);
+document.getElementById('decryptBtn').addEventListener('click',handleDecrypt);
+document.getElementById('clearBtn').addEventListener('click',handleClear);
+document.getElementById('downloadBtn').addEventListener('click',downloadLast);
+document.getElementById('copyBtn').addEventListener('click',copyOutput);
+showLastInfo({note:'ready'});
 </script>
 </body>
 </html>
